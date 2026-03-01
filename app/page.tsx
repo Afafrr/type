@@ -1,19 +1,24 @@
 "use client";
 
 import ActiveUsers from "@/components/ActiveUsers";
+import NamePrompt from "@/components/NamePrompt";
 import { supabase } from "@/lib/supabase";
 import { useMemo, useState } from "react";
 
-const ACTIVE_USERS_CHANNEL = "active-users";
-
 export default function Home() {
+  const [playerName, setPlayerName] = useState("");
+
   const usersChannel = useMemo(() => {
-    return supabase.channel("game:1:users");
-  }, []);
+    if (!playerName) return null;
+    return supabase.channel("game:1:users", {
+      config: { presence: { key: playerName } },
+    });
+  }, [playerName]);
 
   return (
     <div>
-      <ActiveUsers channel={usersChannel} userId={crypto.randomUUID()} />
+      <NamePrompt isOpen={!playerName} onSubmitName={setPlayerName} />
+      <ActiveUsers channel={usersChannel} userId={playerName} />
     </div>
   );
 }
