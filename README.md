@@ -41,7 +41,7 @@ Open http://localhost:3000
 
 ## LIVE DEMO
 
-https://type-gg1bnnkwo-mateuszs-projects-01de8684.vercel.app/
+https://type-weld.vercel.app/
 
 ## Flow
 
