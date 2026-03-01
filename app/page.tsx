@@ -26,6 +26,7 @@ export default function Home() {
     });
   }, [playerName]);
 
+  //called on keystroke
   const handleSendProgress = useCallback(
     (typed: string) => {
       if (!usersChannel || !playerName) return;

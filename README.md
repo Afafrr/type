@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Typeracer MVP
 
-## Getting Started
+Real-time typing race MVP built with Next.js and Supabase.
 
-First, run the development server:
+## Tech stack
+
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- Tailwind CSS 4
+- Supabase (Realtime channels + presence)
+- TanStack Table
+- ESLint
+
+## How to run
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Create a `.env.local` file in the project root and set the Supabase keys:
+
+```bash
+# Client-side (public)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_PUBLISH_KEY=your_supabase_anon_key
+
+# Server-side (secret)
+SUPABASE_URL=your_supabase_url
+SUPABASE_SECRET_KEY=your_supabase_service_role_key
+```
+
+3. Start the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## LIVE DEMO
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+https://type-gg1bnnkwo-mateuszs-projects-01de8684.vercel.app/
 
-## Learn More
+## Flow
 
-To learn more about Next.js, take a look at the following resources:
+```
+After submitting username user joins the channel
+   ↓
+Presence is tracked and showed in top of ui
+   ↓
+When Start is clicked, the request is made to an endpoint,
+which broadcasts to every user sentence and time
+   ↓
+Each client initializes its local round state using the shared timestamps
+   ↓
+As user types the current sentence is broadcast
+   ↓
+Each client receives the sentences and calculates on their own
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Improvements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For now the priority was to make it playable and working.
 
-## Deploy on Vercel
+- The error handling eg. websockets does not have that.
+- Better approach would be to keep websockets live on server and count all the metrics there and update it on client. Supabase Realtime allowed to move quickly and without errors with websockets but it reduces flexibility for custom backend event processing.
+- Rounds and final score data could be kept on DB.
+- handle already existing player name input
+- user could be saved at leat to localStorage
+- there is a issue that when user finishes task, WPM stops only locally
+- also I had plan to send sentence to server after round finishes so server would calculate based on its time the metrics
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Thank you for reading
