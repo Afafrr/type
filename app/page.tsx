@@ -1,6 +1,7 @@
 "use client";
 
 import ActiveUsers from "@/components/ActiveUsers";
+import Leaderboard from "@/components/Leaderboard";
 import NamePrompt from "@/components/NamePrompt";
 import RoundArea from "@/components/RoundArea";
 import StartBtn from "@/components/StartBtn";
@@ -13,6 +14,8 @@ export default function Home() {
   const [playerName, setPlayerName] = useState("");
   const [roundInfo, setRoundInfo] = useState<RoundStartBroadcastPayload | null>(null);
   const [progressByPlayer, setProgressByPlayer] = useState<Record<string, string>>({});
+  const [roundStartsAt, setRoundStartsAt] = useState<number | null>(null);
+  const [roundEndsAt, setRoundEndsAt] = useState<number | null>(null);
   const lastMetricsSentAt = useRef(0);
 
   // Create a Supabase channel for presence tracking
@@ -37,6 +40,7 @@ export default function Home() {
         typed,
       };
 
+      setProgressByPlayer((prev) => ({ ...prev, [playerName]: typed }));
       console.log("send", payload);
       usersChannel.send({
         type: "broadcast",
@@ -52,11 +56,15 @@ export default function Home() {
     usersChannel?.on<RoundStartBroadcastPayload>("broadcast", { event: "round_start" }, ({ payload }) => {
       console.log(payload);
       setRoundInfo(payload);
+      const startsAt = Date.now() + payload.startsIn * 1000;
+      setRoundStartsAt(startsAt);
+      setRoundEndsAt(startsAt + payload.duration * 1000);
     });
     // Listen for currently typed progress
     usersChannel?.on<RoundProgressBroadcastPayload>("broadcast", { event: "round_progress" }, ({ payload }) => {
       console.log("receive", payload);
       setProgressByPlayer((prev) => ({ ...prev, [payload.playerId]: payload.typed }));
+      console.log("updated progressByPlayer", { progressByPlayer });
     });
 
     return () => {
@@ -75,7 +83,17 @@ export default function Home() {
         playerId={playerName}
         playerName={playerName}
         onProgress={handleSendProgress}
+        onRoundComplete={() => {
+          setRoundEndsAt((prev) => (prev ? Math.min(prev, Date.now()) : Date.now()));
+        }}
         className="m-5 flex flex-col"
+      />
+      <Leaderboard
+        roundInfo={roundInfo}
+        progressByPlayer={progressByPlayer}
+        roundStartsAt={roundStartsAt}
+        roundEndsAt={roundEndsAt}
+        className="m-5"
       />
     </div>
   );
