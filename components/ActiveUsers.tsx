@@ -2,7 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
-
+//shows active users in the channel
 export default function ActiveUsers({
   channel,
   userId,
