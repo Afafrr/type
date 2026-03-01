@@ -7,12 +7,15 @@ import { useEffect, useState } from "react";
 
 export type RoundAreaProps = {
   roundInfo: RoundInfo | null;
-  userId: string;
+  playerId: string;
+  playerName: string;
+  sendProgress?: (progress: string) => void;
   onRoundComplete?: () => void;
+  onProgress?: (typed: string) => void;
   className?: string;
 };
 
-export default function RoundArea({ roundInfo, userId, onRoundComplete, className }: RoundAreaProps) {
+export default function RoundArea({ roundInfo, sendProgress, onRoundComplete, onProgress, className }: RoundAreaProps) {
   const [countdownSeconds, setCountdownSeconds] = useState(0);
   const [roundDuration, setRoundDuration] = useState(0);
   const [pendingDuration, setPendingDuration] = useState(0);
@@ -47,6 +50,12 @@ export default function RoundArea({ roundInfo, userId, onRoundComplete, classNam
     onRoundComplete?.();
   };
 
+  const handleProgress = (typed: string) => {
+    if (!activeSentence || roundCompleted) return;
+    sendProgress?.(typed);
+    onProgress?.(typed);
+  };
+
   return (
     <div className={className}>
       {countdownSeconds > 0 && (
@@ -71,7 +80,15 @@ export default function RoundArea({ roundInfo, userId, onRoundComplete, classNam
           className="text-2xl self-end mr-20"
         />
       )}
-      {<TypingInput sentence={activeSentence} userId={userId} sendProgress={() => {}} onComplete={finishRound} />}
+      {
+        <TypingInput
+          sentence={activeSentence}
+          sendProgress={(value) => {
+            if (roundDuration > 0 && activeSentence) handleProgress(value);
+          }}
+          onComplete={finishRound}
+        />
+      }
     </div>
   );
 }

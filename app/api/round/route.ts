@@ -9,7 +9,7 @@ import type {
 import { NextResponse } from "next/server";
 
 //sec
-const ROUND_STARTS_IN = 3;
+const ROUND_STARTS_IN = 1;
 const ROUND_DURATION = 30;
 const ROUND_SENTENCES = [
   "The quick brown fox jumps over the lazy dog.",

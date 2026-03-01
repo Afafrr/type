@@ -4,12 +4,11 @@ import { useEffect, useState } from "react";
 
 export type TypingInputProps = {
   sentence: string;
-  userId: string;
   sendProgress: (progress: string) => void;
   onComplete?: () => void;
 };
 
-export default function TypingInput({ sentence, userId, sendProgress, onComplete }: TypingInputProps) {
+export default function TypingInput({ sentence, sendProgress, onComplete }: TypingInputProps) {
   const [input, setInput] = useState("");
   const [hasCompleted, setHasCompleted] = useState(false);
 
