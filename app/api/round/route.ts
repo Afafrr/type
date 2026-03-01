@@ -9,7 +9,7 @@ import type {
 import { NextResponse } from "next/server";
 
 //sec
-const ROUND_STARTS_IN = 10;
+const ROUND_STARTS_IN = 3;
 const ROUND_DURATION = 30;
 const ROUND_SENTENCES = [
   "The quick brown fox jumps over the lazy dog.",
@@ -30,14 +30,14 @@ export async function POST(req: Request) {
 
   if (body.type === "startRound") {
     const startAt = Date.now() + ROUND_STARTS_IN * 1000;
-    const endAt = startAt + ROUND_DURATION * 1000;
+
     const payload: RoundStartBroadcastPayload = {
       roundId: String(startAt),
       sentence: obj.sentence,
-      startAt,
-      endAt,
+      startsIn: ROUND_STARTS_IN,
+      duration: ROUND_DURATION,
     };
-    
+
     const message: RoundStartBroadcastMessage = {
       type: "broadcast",
       event: "round_start",

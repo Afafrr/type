@@ -2,14 +2,16 @@
 
 import ActiveUsers from "@/components/ActiveUsers";
 import NamePrompt from "@/components/NamePrompt";
+import RoundArea from "@/components/RoundArea";
 import StartBtn from "@/components/StartBtn";
-import TypingInput from "@/components/TypingInput";
+import type { RoundInfo } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useMemo, useState } from "react";
 
 export default function Home() {
   const CHANNEL_NAME = "game:1:messages";
   const [playerName, setPlayerName] = useState("");
+  const [roundInfo, setRoundInfo] = useState<RoundInfo | null>(null);
 
   // Create a Supabase channel for presence tracking
   const usersChannel = useMemo(() => {
@@ -21,9 +23,9 @@ export default function Home() {
 
   // Listen for round start events
   useEffect(() => {
-    usersChannel?.on("broadcast", { event: "round_start" }, ({ payload }) => {
-      //game logic
+    usersChannel?.on<RoundInfo>("broadcast", { event: "round_start" }, ({ payload }) => {
       console.log(payload);
+      setRoundInfo(payload);
     });
 
     return () => {
@@ -35,8 +37,9 @@ export default function Home() {
     <div className="m-10">
       <NamePrompt isOpen={!playerName} onSubmitName={setPlayerName} />
       <ActiveUsers channel={usersChannel} userId={playerName} />
+
       <StartBtn channelName={CHANNEL_NAME} onResponse={() => {}} />
-      <TypingInput sentence="Type this sentence" userId={playerName} sendProgress={() => {}} />
+      <RoundArea roundInfo={roundInfo} userId={playerName} className="m-5 flex flex-col" />
     </div>
   );
 }

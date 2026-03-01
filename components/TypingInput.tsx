@@ -1,15 +1,22 @@
 "use client";
 // AI generated component
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type TypingInputProps = {
   sentence: string;
   userId: string;
   sendProgress: (progress: string) => void;
+  onComplete?: () => void;
 };
 
-export default function TypingInput({ sentence, userId, sendProgress }: TypingInputProps) {
+export default function TypingInput({ sentence, userId, sendProgress, onComplete }: TypingInputProps) {
   const [input, setInput] = useState("");
+  const [hasCompleted, setHasCompleted] = useState(false);
+
+  useEffect(() => {
+    setInput("");
+    setHasCompleted(false);
+  }, [sentence]);
 
   // Helper to compare input and sentence
   const getHighlighted = () => {
@@ -36,11 +43,15 @@ export default function TypingInput({ sentence, userId, sendProgress }: TypingIn
     const value = e.target.value;
     setInput(value);
     sendProgress(value);
+    if (!hasCompleted && sentence.length > 0 && value === sentence) {
+      setHasCompleted(true);
+      onComplete?.();
+    }
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto p-4 bg-white rounded shadow">
-      <div className="mb-2 text-lg font-mono break-all">{getHighlighted()}</div>
+    <div className="w-full max-w-xl mx-auto mt-10 p-4 bg-white rounded shadow">
+      <div className="mb-2 min-h-[2.5em] text-lg font-mono break-all">{getHighlighted()}</div>
       <input
         type="text"
         value={input}
