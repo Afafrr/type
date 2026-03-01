@@ -41,7 +41,6 @@ export default function Home() {
       };
 
       setProgressByPlayer((prev) => ({ ...prev, [playerName]: typed }));
-      console.log("send", payload);
       usersChannel.send({
         type: "broadcast",
         event: "round_progress",
@@ -54,7 +53,6 @@ export default function Home() {
   useEffect(() => {
     // Listen for round start events
     usersChannel?.on<RoundStartBroadcastPayload>("broadcast", { event: "round_start" }, ({ payload }) => {
-      console.log(payload);
       setRoundInfo(payload);
       const startsAt = Date.now() + payload.startsIn * 1000;
       setRoundStartsAt(startsAt);
@@ -62,9 +60,7 @@ export default function Home() {
     });
     // Listen for currently typed progress
     usersChannel?.on<RoundProgressBroadcastPayload>("broadcast", { event: "round_progress" }, ({ payload }) => {
-      console.log("receive", payload);
       setProgressByPlayer((prev) => ({ ...prev, [payload.playerId]: payload.typed }));
-      console.log("updated progressByPlayer", { progressByPlayer });
     });
 
     return () => {
