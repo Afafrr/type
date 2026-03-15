@@ -1,4 +1,4 @@
-## Typeracer MVP
+## Typeracer 3h MVP
 
 Real-time typing race MVP built with Next.js and Supabase.
 
